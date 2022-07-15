@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS employee;
+
+CREATE TABLE employee (
+    id TEXT NOT NULL UNIQUE PRIMARY KEY,
+    login TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    salary REAL NOT NULL
+);
