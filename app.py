@@ -2,10 +2,9 @@ import os
 import sqlite3
 
 import pandas as pd
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 
-# from os.path import dirname, join, realpath
-
+from helper import pack_employees
 
 app = Flask(__name__)
 
@@ -38,6 +37,50 @@ def upload_files():
 
     return redirect(url_for('index'))
 
+@app.route('/users')
+def get_users():
+    """    
+    Get users
+    /users?minSalary=0&maxSalary=4000&offset=0&limit=30&sort=+name
+    http://127.0.0.1:5000/users?minSalary=5555&maxSalary=dafsd&offset=0&limit=12&sort=+id
+    """
+
+    try:
+        min_salary = float(request.args.get('minSalary'))
+    except ValueError :
+        return jsonify('Request param minSalary does not have a valid format'), 400
+    try:
+        max_salary = float(request.args.get('maxSalary'))
+    except ValueError :
+        return jsonify('Request param maxSalary does not have a valid format'), 400
+    try:
+        offset = int(request.args.get('offset'))
+    except ValueError :
+        return jsonify('Request param offset does not have a valid format'), 400
+    try:
+        limit = int(request.args.get('limit'))
+        if limit > 30:
+            return jsonify('Request param limit is more than 30'), 400
+    except ValueError :
+        return jsonify('Request param limit does not have a valid format'), 400
+    try:
+        sort_column = request.args.get('sort')[1:]
+        descending = request.args['sort'][0] == '-'
+    except:
+        return jsonify('Request param sort does not have a valid format'), 400
+
+    conn = get_db_connection()
+    db_employee = conn.execute(
+        'SELECT id, login, name, salary FROM employee WHERE salary BETWEEN ? and ?',
+        (min_salary, max_salary)).fetchall()
+    conn.close()
+
+    packed_employees = {'results': pack_employees(
+        db_employee, offset, limit, sort_column, descending)}
+
+    return jsonify(packed_employees), 200
+
+
 def parse_CSV(filePath):
     col_names = ['id', 'login', 'name', 'salary']
     csvData = pd.read_csv(filePath, names=col_names, header=None)
@@ -49,9 +92,8 @@ def parse_CSV(filePath):
             continue
 
         if len(row) != 4:
-            return ('Error after: ' + row[i - 1]) if i > 0 else ('Error on header')
-
-        print(i, row['id'], row['login'], row['name'], row['salary'])
+            return ('Parameter not correct, error after: '
+                + row[i - 1]) if i > 0 else (' on header')
 
         conn.execute('INSERT OR IGNORE INTO employee (id, login, name, salary) VALUES (?, ?, ?, ?)',
             (row['id'], row['login'], row['name'], row['salary']))
