@@ -38,13 +38,20 @@ def upload_files():
 
     return redirect(url_for('index'))
 
-
 def parse_CSV(filePath):
     col_names = ['id', 'login', 'name', 'salary']
     csvData = pd.read_csv(filePath, names=col_names, header=None)
 
+    conn = get_db_connection()
+
     for i, row in csvData.iterrows():
         print(i, row['id'], row['login'], row['name'], row['salary'])
+        conn.execute('INSERT INTO employee (id, login, name, salary) VALUES (?, ?, ?, ?)',
+            (row['id'], row['login'], row['name'], row['salary']))
+
+    conn.commit()
+    conn.close()
+
 
 
 if (__name__ == "__main__"):
