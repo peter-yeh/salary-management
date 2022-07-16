@@ -20,14 +20,14 @@ def get_db_connection():
 
 
 # Root URL
-@app.route('/')
+@app.route('/users/upload')
 def index():
     # Set The upload HTML template '\templates\index.html'
     return render_template('index.html')
 
 
 # Get the uploaded files
-@app.route("/", methods=['POST'])
+@app.route("/users/upload", methods=['POST'])
 def upload_files():
     # get the uploaded file
     uploaded_file = request.files['file']
@@ -45,9 +45,19 @@ def parse_CSV(filePath):
     conn = get_db_connection()
 
     for i, row in csvData.iterrows():
+        if i == 0 or row['id'][0] == '#':
+            continue
+
+        if len(row) != 4:
+            return ('Error after: ' + row[i - 1]) if i > 0 else ('Error on header')
+
         print(i, row['id'], row['login'], row['name'], row['salary'])
-        conn.execute('INSERT INTO employee (id, login, name, salary) VALUES (?, ?, ?, ?)',
+
+        conn.execute('INSERT OR IGNORE INTO employee (id, login, name, salary) VALUES (?, ?, ?, ?)',
             (row['id'], row['login'], row['name'], row['salary']))
+
+        conn.execute('UPDATE employee SET  login=?, name=?, salary=? WHERE id =?',
+            (row['login'], row['name'], row['salary'], row['id']))
 
     conn.commit()
     conn.close()
