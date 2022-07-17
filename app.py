@@ -92,8 +92,14 @@ def parse_CSV(filePath):
             continue
 
         if len(row) != 4:
-            return ('Parameter not correct, error after: '
-                + row[i - 1]) if i > 0 else (' on header')
+            return ('Parameter not correct, error after: ' + row[i - 1])
+        try:
+            row['salary'] = float(row['salary'])
+            if row['salary'] < 0:
+                return ('Salary for '+ row[i] + ' is less than 0')
+        except ValueError:
+            return ('Salary for ' + row[i + ' is not a number'])
+
 
         conn.execute('INSERT OR IGNORE INTO employee (id, login, name, salary) VALUES (?, ?, ?, ?)',
             (row['id'], row['login'], row['name'], row['salary']))
