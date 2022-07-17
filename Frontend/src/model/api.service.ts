@@ -12,5 +12,9 @@ export class ApiService {
     return this.http.get<any>(
         `${API_URL}/users?minSalary=${minSalary}&maxSalary=${maxSalary}&offset=${offset}&limit=${limit}&sort=${sort}`);
   }
+
+  deleteAll():Observable<any> {
+    return this.http.delete(`${API_URL}/deleteAll`);
+  }
 }
 

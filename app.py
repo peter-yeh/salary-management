@@ -44,7 +44,7 @@ def get_users():
     """    
     Get users
     /users?minSalary=0&maxSalary=4000&offset=0&limit=30&sort=+name
-    http://127.0.0.1:5000/users?minSalary=5555&maxSalary=1234&offset=0&limit=12&sort=+id
+    http://127.0.0.1:5000/users?minSalary=1111&maxSalary=5555&offset=0&limit=12&sort=+id
     """
 
     try:
@@ -82,6 +82,24 @@ def get_users():
         db_employee, offset, limit, sort_column, descending)}
 
     return jsonify(packed_employees), 200
+
+@app.route('/deleteAll', methods=['DELETE'])
+def delete_all():
+    conn = get_db_connection()
+    conn.execute('DELETE FROM employee')
+    conn.commit()
+    conn.close()
+    return jsonify("Deleted database"), 200
+
+
+@app.route('/delete', methods=['POST'])
+def delete_employee():
+    conn = get_db_connection()
+    conn.execute('DELETE FROM employee WHERE id = ?', request.form['id'])
+    conn.commit()
+    conn.close()
+    return redirect(url_for('show_entries'))
+
 
 
 def parse_CSV(filePath):

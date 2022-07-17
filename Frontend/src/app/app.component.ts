@@ -78,10 +78,22 @@ export class AppComponent implements OnInit, OnDestroy {
     this.offset -= this.limit;
     if (this.offset < 0) {
       this.offset = 0;
-      this.toast.error('No more entries');
+      this.toast.error('No entries');
       return;
     }
     this.updateEmployeeArr();
+  }
+
+  clickDeleteAll() {
+    this.apiService.deleteAll().subscribe(
+        (res) =>{
+          this.toast.success('Deleted all entries from database');
+          this.updateEmployeeArr();
+          this.offset= 0;
+          this.limit = 30;
+        },
+        (err) =>this.toast.error('Error deleting database'),
+    );
   }
 
   onSelectColumn() {
@@ -105,7 +117,7 @@ export class AppComponent implements OnInit, OnDestroy {
         .getEmployees(this.minSalary, this.maxSalary, this.offset, this.limit, sortAttribute)
         .subscribe((res) => {
           if (res['results'].length <= 0) {
-            this.toast.error('No more entries');
+            this.toast.error('No entries');
             this.offset -= this.limit;
           } else {
             this.employeeArr = res['results'];
@@ -114,7 +126,6 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         },
         (err) => {
-          console.log(err);
           this.toast.error('Error: ', err.error);
         });
   }
