@@ -15,6 +15,15 @@ export class AppComponent implements OnInit, OnDestroy {
   employeesSub: Subscription = Subscription.EMPTY;
   employeeArr: Employee[] = [];
 
+  displayedColumns: string[] = ['idx', 'id', 'name', 'login', 'salary'];
+  dataSource: any;
+
+  minSalary: string = '99999';
+  maxSalary: string ='0';
+  offset: string = '0';
+  limit: string = '30';
+  sort_column: string = '+id';
+
   constructor(private apiService: ApiService, private toast: ToastrService) { }
 
   ngOnInit() {
@@ -29,8 +38,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.employeesSub = this.apiService
         .getEmployees(0, 23, 31, 23, '-salary')
         .subscribe((res) => {
-          this.employeeArr = res;
-          this.toast.success('Loaded shortened link');
+          this.employeeArr = res['results'];
+          this.dataSource = this.employeeArr;
+          this.toast.success('Loaded employee');
         },
         (err) => {
           console.log(err);

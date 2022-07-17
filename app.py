@@ -3,6 +3,7 @@ import sqlite3
 
 import pandas as pd
 from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask_cors import CORS
 
 from helper import pack_employees
 
@@ -10,6 +11,7 @@ app = Flask(__name__)
 
 app.config["DEBUG"] = True
 SAVED_DIR = os.path.join(os.getcwd(), 'static', 'files')
+CORS(app)
 
 
 def get_db_connection():
@@ -42,7 +44,7 @@ def get_users():
     """    
     Get users
     /users?minSalary=0&maxSalary=4000&offset=0&limit=30&sort=+name
-    http://127.0.0.1:5000/users?minSalary=5555&maxSalary=dafsd&offset=0&limit=12&sort=+id
+    http://127.0.0.1:5000/users?minSalary=5555&maxSalary=1234&offset=0&limit=12&sort=+id
     """
 
     try:
@@ -75,6 +77,7 @@ def get_users():
         (min_salary, max_salary)).fetchall()
     conn.close()
 
+    # db_employee is non serializable
     packed_employees = {'results': pack_employees(
         db_employee, offset, limit, sort_column, descending)}
 

@@ -6,6 +6,7 @@ import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ToastrModule as ToastsModule} from 'ngx-toastr';
 import {ApiService} from 'src/model/api.service';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import {ApiService} from 'src/model/api.service';
     HttpClientModule,
     BrowserAnimationsModule,
     ToastsModule.forRoot(),
+    MatTableModule,
   ],
   providers: [ApiService],
   bootstrap: [AppComponent],

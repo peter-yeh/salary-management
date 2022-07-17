@@ -9,9 +9,9 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   getEmployees(minSalary: number, maxSalary: number, offset: number, limit: number, sort: string)
-    :Observable<Employee[]> {
-    return this.http.get<Employee[]>(`${API_URL}/users?minSalary=${minSalary}&maxSalary=
-        ${maxSalary}&offset=${offset}&limit=${limit}&sort=${sort}`);
+    :Observable<any> {
+    return this.http.get<any>(
+        `${API_URL}/users?minSalary=${minSalary}&maxSalary=${maxSalary}&offset=${offset}&limit=${limit}&sort=${sort}`);
   }
 }
 
