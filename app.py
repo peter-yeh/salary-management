@@ -47,21 +47,21 @@ def get_users():
 
     try:
         min_salary = float(request.args.get('minSalary'))
-    except ValueError :
+    except: # pylint: disable=bare-except
         return jsonify('Request param minSalary does not have a valid format'), 400
     try:
         max_salary = float(request.args.get('maxSalary'))
-    except ValueError :
+    except: # pylint: disable=bare-except
         return jsonify('Request param maxSalary does not have a valid format'), 400
     try:
         offset = int(request.args.get('offset'))
-    except ValueError :
+    except: # pylint: disable=bare-except
         return jsonify('Request param offset does not have a valid format'), 400
     try:
         limit = int(request.args.get('limit'))
         if limit > 30:
             return jsonify('Request param limit is more than 30'), 400
-    except ValueError :
+    except: # pylint: disable=bare-except
         return jsonify('Request param limit does not have a valid format'), 400
     try:
         sort_column = request.args.get('sort')[1:]
