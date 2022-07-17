@@ -66,7 +66,7 @@ def get_users():
     try:
         sort_column = request.args.get('sort')[1:]
         descending = request.args['sort'][0] == '-'
-    except:
+    except: # pylint: disable=bare-except
         return jsonify('Request param sort does not have a valid format'), 400
 
     conn = get_db_connection()
