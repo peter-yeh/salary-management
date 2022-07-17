@@ -39,6 +39,11 @@ caption {
     color: #333;
 }
 
+.textField {
+    display: flex;
+    flex-direction: row;
+}
+
 /* table {
     border-collapse: collapse;
     border: 1px solid black;

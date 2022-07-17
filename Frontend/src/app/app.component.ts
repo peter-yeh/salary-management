@@ -18,8 +18,8 @@ export class AppComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['idx', 'id', 'name', 'login', 'salary'];
   dataSource: any;
 
-  minSalary: string = '99999';
-  maxSalary: string ='0';
+  minSalary: string = '0';
+  maxSalary: string ='99999';
   offset: string = '0';
   limit: string = '30';
   sort_column: string = '+id';
@@ -34,9 +34,36 @@ export class AppComponent implements OnInit, OnDestroy {
     this.employeesSub.unsubscribe();
   }
 
+
+  changeMinSalary(event: any) {
+    if (!(event.target.value as string)) return;
+    this.minSalary = event.target.value as string;
+  }
+  changeMaxSalary(event: any) {
+    if (!(event.target.value as string)) return;
+    this.maxSalary = event.target.value as string;
+  }
+  changeOffset(event: any) {
+    if (!(event.target.value as string)) return;
+    this.offset = event.target.value as string;
+  }
+  changeLimit(event: any) {
+    if (!(event.target.value as string)) return;
+    this.limit = event.target.value as string;
+  }
+
+  onClick() {
+    this.updateEmployeeArr();
+  }
+
   updateEmployeeArr() {
+    const minS = Number(this.minSalary);
+    const maxS = Number(this.maxSalary);
+    const offset = Number(this.offset);
+    const limit = Number(this.limit);
+
     this.employeesSub = this.apiService
-        .getEmployees(0, 23, 31, 23, '-salary')
+        .getEmployees(minS, maxS, offset, limit, '-salary')
         .subscribe((res) => {
           this.employeeArr = res['results'];
           this.dataSource = this.employeeArr;

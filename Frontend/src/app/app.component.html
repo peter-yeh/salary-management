@@ -6,10 +6,25 @@
 
 <div class="content" role="main">
 
-  <h4>Filters:</h4>
+  <h2>Filters:</h2>
+  <div class="textField">
+    <h3>Min Salary:</h3>
+    <input class="input" matInput type="text" matInput (input)="changeMinSalary($event)" placeholder="Min Salary">
+  </div>
+  <div class="textField">
+    <h3>Max Salary:</h3>
+    <input class="input" matInput type="text" matInput (input)="changeMaxSalary($event)" placeholder="Max Salary">
+  </div>
+  <div class="textField">
+    <h3>Offset:</h3>
+    <input class="input" matInput type="text" matInput (input)="changeOffset($event)" placeholder="Offset">
+  </div>
+  <div class="textField">
+    <h3>Limit:</h3>
+    <input class="input" matInput type="text" matInput (input)="changeLimit($event)" placeholder="Limit">
+  </div>
 
-
-
+  <button class="button" mat-raised-button (click)="onClick()">Filter!</button>
 
 
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
