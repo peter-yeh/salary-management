@@ -18,10 +18,10 @@ export class AppComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['idx', 'id', 'name', 'login', 'salary'];
   dataSource: any;
 
-  minSalary: string = '0';
-  maxSalary: string = '99999';
-  offset: string = '0';
-  limit: string = '30';
+  minSalary: number = 0;
+  maxSalary: number = 99999;
+  offset: number = 0;
+  limit: number = 30;
   sort_column: string = 'id';
   sort_order: string = '+';
 
@@ -36,25 +36,51 @@ export class AppComponent implements OnInit, OnDestroy {
     this.employeesSub.unsubscribe();
   }
 
-
   changeMinSalary(event: any) {
-    if (!(event.target.value as string)) return;
-    this.minSalary = event.target.value as string;
+    if (!Number(event.target.value)) {
+      this.toast.error('Min Salary is not a number');
+      return;
+    }
+    this.minSalary = Number(event.target.value);
   }
   changeMaxSalary(event: any) {
-    if (!(event.target.value as string)) return;
-    this.maxSalary = event.target.value as string;
+    if (!Number(event.target.value)) {
+      this.toast.error('Max Salary is not a number');
+      return;
+    }
+    this.maxSalary = Number(event.target.value);
   }
   changeOffset(event: any) {
-    if (!(event.target.value as string)) return;
-    this.offset = event.target.value as string;
+    if (!Number(event.target.value)) {
+      this.toast.error('Offset is not a number');
+      return;
+    }
+    this.offset = Number(event.target.value);
   }
   changeLimit(event: any) {
-    if (!(event.target.value as string)) return;
-    this.limit = event.target.value as string;
+    if (!Number(event.target.value)) {
+      this.toast.error('Limit is not a number');
+      return;
+    }
+    this.limit = Number(event.target.value);
   }
 
-  onClick() {
+  clickFilter() {
+    this.updateEmployeeArr();
+  }
+
+  clickNext() {
+    this.offset += this.limit;
+    this.updateEmployeeArr();
+  }
+
+  clickPrev() {
+    this.offset -= this.limit;
+    if (this.offset < 0) {
+      this.offset = 0;
+      this.toast.error('No more entries');
+      return;
+    }
     this.updateEmployeeArr();
   }
 
@@ -73,18 +99,19 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
   updateEmployeeArr() {
-    const minS = Number(this.minSalary);
-    const maxS = Number(this.maxSalary);
-    const offset = Number(this.offset);
-    const limit = Number(this.limit);
     const sortAttribute = this.sort_order + this.sort_column;
 
     this.employeesSub = this.apiService
-        .getEmployees(minS, maxS, offset, limit, sortAttribute)
+        .getEmployees(this.minSalary, this.maxSalary, this.offset, this.limit, sortAttribute)
         .subscribe((res) => {
-          this.employeeArr = res['results'];
-          this.dataSource = this.employeeArr;
-          this.toast.success('Loaded employee');
+          if (res['results'].length <= 0) {
+            this.toast.error('No more entries');
+            this.offset -= this.limit;
+          } else {
+            this.employeeArr = res['results'];
+            this.dataSource = this.employeeArr;
+            this.toast.success('Loaded employee');
+          }
         },
         (err) => {
           console.log(err);
