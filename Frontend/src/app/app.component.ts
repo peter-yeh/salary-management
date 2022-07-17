@@ -19,10 +19,12 @@ export class AppComponent implements OnInit, OnDestroy {
   dataSource: any;
 
   minSalary: string = '0';
-  maxSalary: string ='99999';
+  maxSalary: string = '99999';
   offset: string = '0';
   limit: string = '30';
-  sort_column: string = '+id';
+  sort_column: string = 'id';
+  sort_order: string = '+';
+
 
   constructor(private apiService: ApiService, private toast: ToastrService) { }
 
@@ -56,14 +58,29 @@ export class AppComponent implements OnInit, OnDestroy {
     this.updateEmployeeArr();
   }
 
+  onSelectColumn() {
+    const element: any = document.getElementById('sort_column');
+    if (!element) return;
+    this.sort_column = element.value as string;
+  }
+
+  onSelectOrder() {
+    const element: any = document.getElementById('sort_order');
+    if (!element) return;
+    if (element.value === 'ASC') this.sort_order = '+';
+    else this.sort_order = '-';
+  }
+
+
   updateEmployeeArr() {
     const minS = Number(this.minSalary);
     const maxS = Number(this.maxSalary);
     const offset = Number(this.offset);
     const limit = Number(this.limit);
+    const sortAttribute = this.sort_order + this.sort_column;
 
     this.employeesSub = this.apiService
-        .getEmployees(minS, maxS, offset, limit, '-salary')
+        .getEmployees(minS, maxS, offset, limit, sortAttribute)
         .subscribe((res) => {
           this.employeeArr = res['results'];
           this.dataSource = this.employeeArr;

@@ -24,6 +24,22 @@
     <input class="input" matInput type="text" matInput (input)="changeLimit($event)" placeholder="Limit">
   </div>
 
+  <div class="textField">
+    <h3>Sort By Column: </h3>
+    <select id="sort_column"  (input)="onSelectColumn()">
+      <option value="id">id</option>
+      <option value="name">Name</option>
+      <option value="login">Login</option>
+      <option value="salary">Salary</option>
+    </select>
+
+    <select id="sort_order"  (input)="onSelectOrder()">
+      <option value="id">ASC</option>
+      <option value="name">DESC</option>
+    </select>
+
+  </div>
+
   <button class="button" mat-raised-button (click)="onClick()">Filter!</button>
 
 
