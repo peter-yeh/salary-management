@@ -128,7 +128,7 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         },
         (err) => {
-          this.toast.error('Error: ', err.error);
+          this.toast.error(err.error);
         });
   }
 
@@ -138,13 +138,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   clickSubmit() {
     if (!this.fileToUpload) return;
-    console.log('Clicked on submit');
     this.apiService.uploadCSV(this.fileToUpload).subscribe(
         (res) => {
           this.toast.success(res);
           this.fetchEmployees();
         },
-        (err) =>this.toast.error('Error: ' + err.error),
+        (err) =>this.toast.error(err.error),
     );
   }
 }

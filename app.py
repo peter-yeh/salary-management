@@ -2,7 +2,7 @@ import os
 import sqlite3
 
 import pandas as pd
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, jsonify, redirect, request, url_for
 from flask_cors import CORS
 
 from helper import pack_employees
@@ -26,12 +26,17 @@ def get_db_connection():
 def upload_files():
     # get the uploaded file
     uploaded_file = request.files['file']
-    if uploaded_file.filename != '':
+    if uploaded_file.filename == '':
+        return jsonify("Error fetching CSV file"), 400
+
+    try:
         file_path = os.path.join(SAVED_DIR, uploaded_file.filename)
         uploaded_file.save(file_path)
         parse_CSV(file_path)
+    except Exception as err:
+        return jsonify(repr(err)), 400
 
-    return redirect(url_for('index'))
+    return jsonify("CSV Uploaded successfully"), 200
 
 @app.route('/users')
 def get_users():
@@ -107,13 +112,16 @@ def parse_CSV(filePath):
             continue
 
         if len(row) != 4:
-            return ('Parameter not correct, error after: ' + row[i - 1])
+            conn.close()
+            raise ValueError('Parameter not correct, error after: ' + row[i - 1])
         try:
             row['salary'] = float(row['salary'])
             if row['salary'] < 0:
-                return ('Salary for '+ row[i] + ' is less than 0')
-        except ValueError:
-            return ('Salary for ' + row[i + ' is not a number'])
+                conn.close()
+                raise ValueError('Salary for is less than 0')
+        except:
+            conn.close()
+            raise ValueError('Salary for ' + row[i + ' is not a number'])
 
 
         conn.execute('INSERT OR IGNORE INTO employee (id, login, name, salary) VALUES (?, ?, ?, ?)',
