@@ -23,6 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
   sort_column: string = 'id';
   sort_order: string = '+';
 
+  fileToUpload: File;
 
   constructor(private apiService: ApiService, private toast: ToastrService) { }
 
@@ -129,5 +130,20 @@ export class AppComponent implements OnInit, OnDestroy {
         (err) => {
           this.toast.error('Error: ', err.error);
         });
+  }
+
+  handleFileInput(event:any) {
+    this.fileToUpload = event.target.files.item(0);
+  }
+
+  clickSubmit() {
+    if (!this.fileToUpload) return;
+    console.log('Clicked on submit');
+    this.apiService.uploadCSV(this.fileToUpload).subscribe(
+        (res) => {
+          this.toast.success(res);
+        },
+        (err) =>this.toast.error('Error: ' + err.error),
+    );
   }
 }
