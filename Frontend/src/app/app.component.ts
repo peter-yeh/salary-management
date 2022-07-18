@@ -2,7 +2,6 @@ import {ToastrService} from 'ngx-toastr';
 import {Subscription} from 'rxjs';
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {ApiService} from 'src/model/api.service';
-import {Employee} from 'src/model/employee.model';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +12,6 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'Frontend';
 
   employeesSub: Subscription = Subscription.EMPTY;
-  employeeArr: Employee[] = [];
 
   displayedColumns: string[] = ['idx', 'id', 'name', 'login', 'salary'];
   dataSource: any;
@@ -29,7 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private apiService: ApiService, private toast: ToastrService) { }
 
   ngOnInit() {
-    this.updateEmployeeArr();
+    this.fetchEmployees();
   }
 
   ngOnDestroy() {
@@ -37,6 +35,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   changeMinSalary(event: any) {
+    if (!event.target.value) return;
     if (!Number(event.target.value)) {
       this.toast.error('Min Salary is not a number');
       return;
@@ -44,6 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.minSalary = Number(event.target.value);
   }
   changeMaxSalary(event: any) {
+    if (!event.target.value) return;
     if (!Number(event.target.value)) {
       this.toast.error('Max Salary is not a number');
       return;
@@ -51,6 +51,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.maxSalary = Number(event.target.value);
   }
   changeOffset(event: any) {
+    if (!event.target.value) return;
     if (!Number(event.target.value)) {
       this.toast.error('Offset is not a number');
       return;
@@ -58,6 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.offset = Number(event.target.value);
   }
   changeLimit(event: any) {
+    if (!event.target.value) return;
     if (!Number(event.target.value)) {
       this.toast.error('Limit is not a number');
       return;
@@ -66,12 +68,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   clickFilter() {
-    this.updateEmployeeArr();
+    this.fetchEmployees();
   }
 
   clickNext() {
     this.offset += this.limit;
-    this.updateEmployeeArr();
+    this.fetchEmployees();
   }
 
   clickPrev() {
@@ -81,16 +83,16 @@ export class AppComponent implements OnInit, OnDestroy {
       this.toast.error('No entries');
       return;
     }
-    this.updateEmployeeArr();
+    this.fetchEmployees();
   }
 
   clickDeleteAll() {
     this.apiService.deleteAll().subscribe(
-        (res) =>{
+        (res) => {
           this.toast.success('Deleted all entries from database');
-          this.updateEmployeeArr();
           this.offset= 0;
           this.limit = 30;
+          this.dataSource = [];
         },
         (err) =>this.toast.error('Error deleting database'),
     );
@@ -110,7 +112,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
 
-  updateEmployeeArr() {
+  fetchEmployees() {
     const sortAttribute = this.sort_order + this.sort_column;
 
     this.employeesSub = this.apiService
@@ -120,8 +122,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.toast.error('No entries');
             this.offset -= this.limit;
           } else {
-            this.employeeArr = res['results'];
-            this.dataSource = this.employeeArr;
+            this.dataSource = res['results'];
             this.toast.success('Loaded employee');
           }
         },

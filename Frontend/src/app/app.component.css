@@ -28,15 +28,13 @@ svg#clouds {
     align-items: center;
 }
 
-table {
-    width: 100%;
+.contentGroup {
+    display: flex;
+    flex-direction: row;
 }
 
-caption {
-    font-weight: bold;
-    font-size: 24px;
-    text-align: left;
-    color: #333;
+table {
+    width: 100%;
 }
 
 .inputGroup {
@@ -44,6 +42,16 @@ caption {
     flex-direction: column;
     display: flex;
     align-items: flex-start;
+}
+
+.input {
+    height: 2rem;
+}
+
+.flexrow {
+    display: flex;
+    flex-direction: row;
+    padding: 0.5rem;
 }
 
 .button {
@@ -66,12 +74,6 @@ caption {
 
 button:hover {
     background-color: lightblue;
-}
-
-.flexrow {
-    display: flex;
-    flex-direction: row;
-    padding: 0.5rem;
 }
 
 tr th,

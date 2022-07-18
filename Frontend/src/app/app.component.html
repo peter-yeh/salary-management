@@ -6,39 +6,54 @@
 
 <div class="content" role="main">
 
-  <div class="inputGroup">
-    <h2>Filters:</h2>
-    <div class="flexrow">
-      <h3>Min Salary:</h3>
-      <input class="input" matInput type="text" matInput (input)="changeMinSalary($event)" placeholder="Min Salary">
-    </div>
-    <div class="flexrow">
-      <h3>Max Salary:</h3>
-      <input class="input" matInput type="text" matInput (input)="changeMaxSalary($event)" placeholder="Max Salary">
-    </div>
-    <div class="flexrow">
-      <h3>Offset:</h3>
-      <input class="input" matInput type="text" matInput (input)="changeOffset($event)" placeholder="Offset">
-    </div>
-    <div class="flexrow">
-      <h3>Limit:</h3>
-      <input class="input" matInput type="text" matInput (input)="changeLimit($event)" placeholder="Limit">
-    </div>
-    <div class="flexrow">
-      <h3>Sort By Column: </h3>
-      <select id="sort_column" (input)="onSelectColumn()">
-        <option value="id">id</option>
-        <option value="name">Name</option>
-        <option value="login">Login</option>
-        <option value="salary">Salary</option>
-      </select>
+  <div class="contentGroup">
 
-      <select id="sort_order" (input)="onSelectOrder()">
-        <option value="ASC">ASC</option>
-        <option value="DESC">DESC</option>
-      </select>
+    <div class="inputGroup">
+      <h2>Filters:</h2>
+      <div class="flexrow">
+        <h3>Min Salary:</h3>
+        <input class="input" matInput type="text" matInput (input)="changeMinSalary($event)" placeholder="Min Salary">
+      </div>
+      <div class="flexrow">
+        <h3>Max Salary:</h3>
+        <input class="input" matInput type="text" matInput (input)="changeMaxSalary($event)" placeholder="Max Salary">
+      </div>
+      <div class="flexrow">
+        <h3>Offset:</h3>
+        <input class="input" matInput type="text" matInput (input)="changeOffset($event)" placeholder="Offset">
+      </div>
+      <div class="flexrow">
+        <h3>Limit:</h3>
+        <input class="input" matInput type="text" matInput (input)="changeLimit($event)" placeholder="Limit">
+      </div>
+      <div class="flexrow">
+        <h3>Sort By Column: </h3>
+        <select id="sort_column" (input)="onSelectColumn()">
+          <option value="id">id</option>
+          <option value="name">Name</option>
+          <option value="login">Login</option>
+          <option value="salary">Salary</option>
+        </select>
+
+        <select id="sort_order" (input)="onSelectOrder()">
+          <option value="ASC">ASC</option>
+          <option value="DESC">DESC</option>
+        </select>
+      </div>
+      <button class="button" mat-raised-button (click)="clickFilter()">Filter!</button>
     </div>
-    <button class="button" mat-raised-button (click)="clickFilter()">Filter!</button>
+
+    <iframe name="preventRedirect" id="preventRedirect" style="display: none;"></iframe>
+    <div style="padding: 2rem; width: 100%;">
+      <h1>Upload employee CSV</h1>
+      <h3>Valid format: </h3>
+      <h3>id,login,name,salary</h3>
+      <h3>e0001,hpotter,Harry Potter,1234.00</h3>
+      <form method="POST" action="http://localhost:5000/users/upload" enctype="multipart/form-data" target="preventRedirect">
+        <p><input type="file" name="file"></p>
+        <p><input type="submit" value="Submit"></p>
+      </form>
+    </div>
 
   </div>
 

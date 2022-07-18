@@ -10,6 +10,7 @@ export class ApiService {
   getEmployees(minSalary: Number, maxSalary: Number, offset: Number, limit: Number, sort: string)
     :Observable<any> {
     return this.http.get<any>(
+        // eslint-disable-next-line max-len
         `${API_URL}/users?minSalary=${minSalary}&maxSalary=${maxSalary}&offset=${offset}&limit=${limit}&sort=${sort}`);
   }
 

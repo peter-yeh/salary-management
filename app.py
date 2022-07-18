@@ -20,12 +20,6 @@ def get_db_connection():
     return conn
 
 
-# Root URL
-@app.route('/users/upload')
-def index():
-    # Set The upload HTML template '\templates\index.html'
-    return render_template('index.html')
-
 
 # Get the uploaded files
 @app.route("/users/upload", methods=['POST'])
