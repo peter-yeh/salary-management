@@ -142,6 +142,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.apiService.uploadCSV(this.fileToUpload).subscribe(
         (res) => {
           this.toast.success(res);
+          this.fetchEmployees();
         },
         (err) =>this.toast.error('Error: ' + err.error),
     );
