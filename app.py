@@ -1,8 +1,9 @@
+import math
 import os
 import sqlite3
 
 import pandas as pd
-from flask import Flask, jsonify, redirect, request, url_for
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from helper import pack_employees
@@ -34,7 +35,7 @@ def upload_files():
         uploaded_file.save(file_path)
         parse_CSV(file_path)
     except Exception as err:
-        return jsonify(repr(err)), 400
+        return jsonify("Error parsing CSV ", repr(err)), 400
 
     return jsonify("CSV Uploaded successfully"), 200
 
@@ -97,13 +98,19 @@ def delete_employee():
     conn.execute('DELETE FROM employee WHERE id = ?', request.form['id'])
     conn.commit()
     conn.close()
-    return redirect(url_for('show_entries'))
+    return jsonify("Deleted employee"), 200
 
 
 
 def parse_CSV(filePath):
     col_names = ['id', 'login', 'name', 'salary']
-    csvData = pd.read_csv(filePath, names=col_names, header=None)
+    try:
+        csvData = pd.read_csv(filePath, names=col_names, header=None)
+    except:
+        raise Exception("Error in CSV format")
+
+    if len(csvData) <= 0:
+        raise Exception("Empty file")
 
     conn = get_db_connection()
 
@@ -111,28 +118,39 @@ def parse_CSV(filePath):
         if i == 0 or row['id'][0] == '#':
             continue
 
-        if len(row) != 4:
+        if not row[0] or not row[1] or not row[2] or not row[3]:
             conn.close()
-            raise ValueError('Parameter not correct, error after: ' + row[i - 1])
-        try:
-            row['salary'] = float(row['salary'])
-            if row['salary'] < 0:
-                conn.close()
-                raise ValueError('Salary for is less than 0')
-        except:
-            conn.close()
-            raise ValueError('Salary for ' + row[i + ' is not a number'])
+            raise Exception('Parameter not correct, error after: ' + row[i])
 
+        salary_is_float = is_float(row['salary'])
+        salary = float(row['salary'])
+
+        if not salary_is_float :
+            conn.close()
+            raise ValueError('Salary for row ' + str(i + 1) + ' is not a number')
+
+        if salary < 0:
+            conn.close()
+            raise ValueError('Salary for row ' + str(i + 1) + ' is less than 0')
 
         conn.execute('INSERT OR IGNORE INTO employee (id, login, name, salary) VALUES (?, ?, ?, ?)',
-            (row['id'], row['login'], row['name'], row['salary']))
+            (row['id'], row['login'], row['name'], salary))
 
         conn.execute('UPDATE employee SET  login=?, name=?, salary=? WHERE id =?',
-            (row['login'], row['name'], row['salary'], row['id']))
+            (row['login'], row['name'], salary, row['id']))
 
     conn.commit()
     conn.close()
 
+
+def is_float(s):
+    try:
+        temp = float(s)
+        if math.isnan(temp):
+            return False
+        return True
+    except ValueError:
+        return False
 
 
 if (__name__ == "__main__"):
