@@ -4,6 +4,8 @@
 - Backend -> Flask
 - Frontend -> Angular
 - Database -> Sqlite3
+- Implemented User story 1 and user story 2
+- Added a delete all button to clear database for testing
 
 
 ## Installation
