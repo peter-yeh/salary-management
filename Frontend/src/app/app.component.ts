@@ -36,7 +36,10 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   changeMinSalary(event: any) {
-    if (!event.target.value) return;
+    if (!event.target.value) {
+      this.minSalary = 0;
+      return;
+    }
     if (!Number(event.target.value)) {
       this.toast.error('Min Salary is not a number');
       return;
@@ -44,7 +47,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.minSalary = Number(event.target.value);
   }
   changeMaxSalary(event: any) {
-    if (!event.target.value) return;
+    if (!event.target.value) {
+      this.maxSalary = 0;
+      return;
+    }
     if (!Number(event.target.value)) {
       this.toast.error('Max Salary is not a number');
       return;
@@ -52,7 +58,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.maxSalary = Number(event.target.value);
   }
   changeOffset(event: any) {
-    if (!event.target.value) return;
+    if (!event.target.value) {
+      this.offset = 0;
+      return;
+    }
     if (!Number(event.target.value)) {
       this.toast.error('Offset is not a number');
       return;
@@ -60,7 +69,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.offset = Number(event.target.value);
   }
   changeLimit(event: any) {
-    if (!event.target.value) return;
+    if (!event.target.value) {
+      this.limit = 0;
+      return;
+    }
     if (!Number(event.target.value)) {
       this.toast.error('Limit is not a number');
       return;
@@ -69,6 +81,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   clickFilter() {
+    this.offset = 0;
     this.fetchEmployees();
   }
 
@@ -81,7 +94,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.offset -= this.limit;
     if (this.offset < 0) {
       this.offset = 0;
-      this.toast.error('No entries');
+      this.fetchEmployees();
+      this.toast.error('Reached the end');
       return;
     }
     this.fetchEmployees();
@@ -120,11 +134,11 @@ export class AppComponent implements OnInit, OnDestroy {
         .getEmployees(this.minSalary, this.maxSalary, this.offset, this.limit, sortAttribute)
         .subscribe((res) => {
           if (res['results'].length <= 0) {
+            this.dataSource = [];
             this.toast.error('No entries');
-            this.offset -= this.limit;
+            this.offset = 0;
           } else {
             this.dataSource = res['results'];
-            this.toast.success('Loaded employee');
           }
         },
         (err) => {
@@ -141,6 +155,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.apiService.uploadCSV(this.fileToUpload).subscribe(
         (res) => {
           this.toast.success(res);
+          // Sometimes, fetchEmployees is called too fast
+          // Hence, the list may not be populated
           this.fetchEmployees();
         },
         (err) =>this.toast.error(err.error),
